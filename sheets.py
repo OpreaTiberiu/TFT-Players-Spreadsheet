@@ -1,5 +1,5 @@
 import os.path
-
+from pathlib import Path
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
@@ -15,26 +15,28 @@ SCOPES = [
 
 class Sheets:
     def __init__(self, sheet_id=""):
+        self.cred_path = str(Path(__file__).parent.absolute())
         self.creds = None
         self.sheet_id = sheet_id
         self.setup_creds()
         self.service = build("sheets", "v4", credentials=self.creds)
 
+
     def setup_creds(self):
         # The file token.json stores the user's access and refresh tokens, and is
         # created automatically when the authorization flow completes for the first
         # time.
-        if os.path.exists("token.json"):
-            self.creds = Credentials.from_authorized_user_file("token.json", SCOPES)
+        if os.path.exists(f"{self.cred_path}\\token.json"):
+            self.creds = Credentials.from_authorized_user_file(f"{self.cred_path}\\token.json", SCOPES)
         # If there are no (valid) credentials available, let the user log in.
         if not self.creds or not self.creds.valid:
             if self.creds and self.creds.expired and self.creds.refresh_token:
                 self.creds.refresh(Request())
             else:
-                flow = InstalledAppFlow.from_client_secrets_file("cred.json", SCOPES)
+                flow = InstalledAppFlow.from_client_secrets_file(f"{self.cred_path}\\cred.json", SCOPES)
                 self.creds = flow.run_local_server(port=0)
             # Save the credentials for the next run
-            with open("token.json", "w") as token:
+            with open(f"{self.cred_path}\\token.json", "w") as token:
                 token.write(self.creds.to_json())
 
     def create_sheet(self, title="ro_players"):
@@ -128,6 +130,23 @@ class Sheets:
                     range=f"A1:{max_col}{max_row}",
                     valueInputOption="USER_ENTERED",
                     body=body,
+                )
+                .execute()
+            )
+            print(f"{result.get('updatedCells')} cells updated.")
+            return result
+        except HttpError as error:
+            print(f"An error occurred: {error}")
+            return error
+
+    def clear(self):
+        try:
+            result = (
+                self.service.spreadsheets()
+                .values()
+                .clear(
+                    spreadsheetId=self.sheet_id,
+                    range=f"A:Z",
                 )
                 .execute()
             )

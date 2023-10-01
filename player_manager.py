@@ -22,7 +22,8 @@ class PlayerManager:
                 self.players.append(Player(player_as_dict))
 
     def add_player(self, player: Player) -> None:
-        self.players.append(player)
+        if player not in self:
+            self.players.append(player)
 
     def remove_player(self, player):
         self.players.remove(player)

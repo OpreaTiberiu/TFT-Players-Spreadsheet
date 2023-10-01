@@ -1,3 +1,5 @@
+import os
+
 from urllib.parse import urlparse
 
 import click
@@ -26,7 +28,10 @@ def update_players(check_website):
     for player in sheet_data["values"]:
         player_data_list = [data for data in player if bool(str(data).strip())]
         if len(player_data_list) == 1:
-            complete_player_data = get_player_data(player_data_list[0], SET)
+            url = player_data_list[0]
+            if SET in url:
+                url = url.replace(SET, "")
+            complete_player_data = get_player_data(url, SET)
             if complete_player_data:
                 sheets_player_manager.add_player(complete_player_data)
 
@@ -51,10 +56,11 @@ def update_players(check_website):
                         complete_player_manager.add_player(updated_player)
 
         complete_player_manager.sort()
-
+        sheets_obj.clear()
         sheets_obj.update(complete_player_manager.get_players_as_list())
     else:
         sheets_player_manager.sort()
+        sheets_obj.clear()
         sheets_obj.update(sheets_player_manager.get_players_as_list())
 
 
