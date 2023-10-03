@@ -18,6 +18,7 @@ URL = "https://lolchess.gg/favorites?id=9ad17d45df624e2ab150d632671d644a#"
     help="Try to grab data from lolchess and merge the 2 sources of data",
 )
 def update_players(check_website):
+    # check_website=True
     # get players from sheet
     sheets_obj = Sheets()
     sheets_obj.get_sheet_from_drive()

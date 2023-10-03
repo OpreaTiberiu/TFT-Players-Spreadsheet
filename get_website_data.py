@@ -116,8 +116,10 @@ def get_player_data(url, set) -> Player | None:
         print(e)
         date = datetime.date.today()
         with open(f"failed_{date}.txt", "a+") as f:
-            f.write(f"{e}\n")
+            f.write(f"{e}")
+            f.write("\n")
             f.write(url)
+            f.write("\n")
         return None
     else:
         return player_obj
