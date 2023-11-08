@@ -15,7 +15,6 @@ from player_manager import PlayerManager
 def get_players(url) -> PlayerManager | None:
     manager = get_site_data(url)
     if len(manager.players) > 0:
-        manager.set_headers()
         return manager
     return None
 
@@ -43,7 +42,7 @@ def get_site_data(url) -> PlayerManager | None:
                 player_dict = {}
                 try:
                     player_dict["server"] = servers_list[server_index].text
-                    player_dict["name"] = player_element.find_element(
+                    player_dict["nume"] = player_element.find_element(
                         by=By.CSS_SELECTOR, value="td.summoner a"
                     ).text
                     player_dict["link"] = player_element.find_element(
@@ -58,16 +57,16 @@ def get_site_data(url) -> PlayerManager | None:
                     player_dict["winrate"] = player_element.find_element(
                         by=By.CSS_SELECTOR, value="td.winrate"
                     ).text
-                    player_dict["toprate"] = player_element.find_element(
+                    player_dict["top4"] = player_element.find_element(
                         by=By.CSS_SELECTOR, value="td.toprate"
                     ).text
-                    player_dict["played"] = player_element.find_element(
+                    player_dict["nr. meciuri"] = player_element.find_element(
                         by=By.CSS_SELECTOR, value="td.played"
                     ).text
                     player_dict["wins"] = player_element.find_element(
                         by=By.CSS_SELECTOR, value="td.wins"
                     ).text
-                    player_dict["tops"] = player_element.find_element(
+                    player_dict["nr. top4"] = player_element.find_element(
                         by=By.CSS_SELECTOR, value="td.tops"
                     ).text
                     player_obj = Player(player_dict)
@@ -95,7 +94,7 @@ def get_player_data(url, set) -> Player | None:
         player_dict["server"] = (
             soup.find("div", {"class": "name"}).find("span").text.strip()
         )
-        player_dict["name"] = (
+        player_dict["nume"] = (
             soup.find("div", {"class": "name"}).find("h2").text.strip()
         )
         player_dict["link"] = url
@@ -108,9 +107,9 @@ def get_player_data(url, set) -> Player | None:
         stats_list_elements = soup.find("ul", {"class": "ratings"}).find_all("li")
         player_dict["wins"] = stats_list_elements[0].find("strong").text.strip()
         player_dict["winrate"] = stats_list_elements[1].find("strong").text.strip()
-        player_dict["tops"] = stats_list_elements[2].find("strong").text.strip()
-        player_dict["toprate"] = stats_list_elements[3].find("strong").text.strip()
-        player_dict["played"] = stats_list_elements[4].find("strong").text.strip()
+        player_dict["nr. top4"] = stats_list_elements[2].find("strong").text.strip()
+        player_dict["top4"] = stats_list_elements[3].find("strong").text.strip()
+        player_dict["nr. meciuri"] = stats_list_elements[4].find("strong").text.strip()
         player_obj = Player(player_dict)
     except Exception as e:
         print(e)

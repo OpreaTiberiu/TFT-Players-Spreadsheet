@@ -1,23 +1,23 @@
 from __future__ import annotations
 
 from player import Player
+from headers import *
 
+HEADERS = ["Server", "Nume", "Rank", "LP", "Link", "Winrate", "Top4", "Nr. meciuri", "Wins", "Nr.Top4"]
 
 class PlayerManager:
     def __init__(self, players_sheet: list[list[str]] | None = None):
         self.players = []
-        self.headers = []
 
         if players_sheet is not None:
             self.create_from_sheet(players_sheet)
 
     def create_from_sheet(self, players_sheet: list[list[str]] | None):
-        self.headers = [h.lower() for h in players_sheet[0]]
         for player_as_list in players_sheet[1:]:
-            if len(player_as_list) == len(self.headers):
+            if len(player_as_list) == len(FIELDS_TO_HEADERS.keys()):
                 player_as_dict = {
-                    k.lower(): player_as_list[self.headers.index(k)]
-                    for k in self.headers
+                    k: player_as_list[list(FIELDS_TO_HEADERS.values()).index(k)]
+                    for k in FIELDS_TO_HEADERS.values()
                 }
                 self.players.append(Player(player_as_dict))
 
@@ -29,9 +29,9 @@ class PlayerManager:
         self.players.remove(player)
 
     def get_players_as_list(self) -> list[list[str]]:
-        ret_val = [self.headers]
+        ret_val = [list(DISPLAYED_HEADERS.values())]
         for player in self.players:
-            ret_val.append(player.get_formatted_dict(self.headers))
+            ret_val.append(player.get_formatted_dict())
         return ret_val
 
     def __contains__(self, item: Player) -> bool:
@@ -39,9 +39,6 @@ class PlayerManager:
             if item.link == player.link:
                 return True
         return False
-
-    def set_headers(self) -> None:
-        self.headers = list(self.players[0].__dict__.keys())
 
     def sort(self):
         self.players.sort(key=Player.sort_key, reverse=True)
@@ -59,9 +56,6 @@ class PlayerManager:
         first_manager: PlayerManager, second_manager: PlayerManager
     ) -> PlayerManager:
         player_manager = PlayerManager()
-        player_manager.headers = (
-            first_manager.headers if first_manager.headers else second_manager.headers
-        )
         player_manager.players = first_manager.players.copy()
         for player in second_manager.players:
             if player not in player_manager:

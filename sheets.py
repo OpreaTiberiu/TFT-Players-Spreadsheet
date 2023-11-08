@@ -77,7 +77,7 @@ class Sheets:
             print(f"An error occurred: {error}")
             return error
 
-    def get_sheet_from_drive(self, name="ro_players"):
+    def get_sheet_from_drive(self, name="TFT Romania - Jucatori "):
         try:
             drive_service = build("drive", "v3", credentials=self.creds)
             # Call the Drive v3 API
@@ -106,7 +106,7 @@ class Sheets:
                 .get(
                     spreadsheetId=self.sheet_id,
                     range=range_name,
-                    valueRenderOption="UNFORMATTED_VALUE",
+                    valueRenderOption="FORMATTED_VALUE",
                 )
                 .execute()
             )
