@@ -3,7 +3,19 @@ from __future__ import annotations
 from player import Player
 from headers import *
 
-HEADERS = ["Server", "Nume", "Rank", "LP", "Link", "Winrate", "Top4", "Nr. meciuri", "Wins", "Nr.Top4"]
+HEADERS = [
+    "Server",
+    "Nume",
+    "Rank",
+    "LP",
+    "Link",
+    "Winrate",
+    "Top4",
+    "Nr. meciuri",
+    "Wins",
+    "Nr.Top4",
+]
+
 
 class PlayerManager:
     def __init__(self, players_sheet: list[list[str]] | None = None):
@@ -36,7 +48,7 @@ class PlayerManager:
 
     def __contains__(self, item: Player) -> bool:
         for player in self.players:
-            if item.link == player.link:
+            if item.link == player.link or player.name == item.name:
                 return True
         return False
 

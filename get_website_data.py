@@ -19,13 +19,55 @@ def get_players(url) -> PlayerManager | None:
     return None
 
 
+def get_player_site_data(url, set) -> Player | None:
+    try:
+        driver = webdriver.Chrome()
+        driver.set_window_position(0, -1500)
+        driver.get(url)
+        sleep(2)
+        player_dict = {}
+        player_dict["link"] = driver.current_url.replace(set, "")
+        try:
+            player_dict["server"] = player_dict["link"].split("/")[4].upper()
+            player_dict["rank"] = driver.find_element(
+                by=By.CSS_SELECTOR, value="div.tier strong"
+            ).text
+            player_dict["lp"] = driver.find_element(
+                by=By.CSS_SELECTOR, value="div.tier span"
+            ).text
+            player_dict["nume"] = driver.find_element(
+                by=By.CSS_SELECTOR, value="div.info div h2"
+            ).text
+            player_dict["wins"] = driver.find_elements(
+                by=By.CSS_SELECTOR, value="ul.ratings li div strong"
+            )[0].text
+            player_dict["winrate"] = driver.find_elements(
+                by=By.CSS_SELECTOR, value="ul.ratings li div strong"
+            )[1].text
+            player_dict["nr. top4"] = driver.find_elements(
+                by=By.CSS_SELECTOR, value="ul.ratings li div strong"
+            )[2].text
+            player_dict["top4"] = driver.find_elements(
+                by=By.CSS_SELECTOR, value="ul.ratings li div strong"
+            )[3].text
+            player_dict["nr. meciuri"] = driver.find_elements(
+                by=By.CSS_SELECTOR, value="ul.ratings li div strong"
+            )[4].text
+        except Exception as e:
+            print(driver.current_url, "   ", e)
+        else:
+            return Player(player_dict)
+    except Exception as e:
+        print(e)
+        return None
+
+
 def get_site_data(url) -> PlayerManager | None:
     try:
         driver = webdriver.Chrome()
-
+        driver.set_window_position(0, -1500)
         driver.get(url)
-        sleep(5)
-
+        sleep(3)
         servers_list = driver.find_elements(by=By.CSS_SELECTOR, value="ul li.nav-item")
 
         player_manager = PlayerManager()

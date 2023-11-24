@@ -19,7 +19,7 @@ URL = "https://lolchess.gg/favorites?id=9ad17d45df624e2ab150d632671d644a#"
     help="Try to grab data from lolchess and merge the 2 sources of data",
 )
 def update_players(check_website):
-    check_website=True
+    check_website = True
     # get players from sheet
     sheets_obj = Sheets()
     sheets_obj.get_sheet_from_drive()
@@ -39,27 +39,39 @@ def update_players(check_website):
 
     if check_website:
         # get players from website
-        website_player_manager = get_players(URL)
+        # website_player_manager = get_players(URL)
         # merge the website and sheet players
-        complete_player_manager = PlayerManager.merge(
-            website_player_manager, sheets_player_manager
-        )
 
-        for player in complete_player_manager.players:
+        ##############################################################
+        # FORCE RELOAD ALL PLAYERS
+        # new_sheets_player_manager = PlayerManager()
+        # for player in sheets_player_manager.players:
+        #     renamed_player = get_player_site_data(player.link, SET)
+        #     if renamed_player:
+        #         new_sheets_player_manager.add_player(renamed_player)
+        # complete_player_manager = PlayerManager.merge(
+        #     website_player_manager, new_sheets_player_manager
+        # )
+        ##############################################################
+
+        # complete_player_manager = PlayerManager.merge(
+        #     website_player_manager, sheets_player_manager
+        # )
+
+        updated_complete_manager = PlayerManager()
+        for player in sheets_player_manager.players:
             if type(player.link) is str and "http" in player.link:
                 info_as_url = urlparse(player.link)
                 if (
                     info_as_url.netloc == "lolchess.gg"
                     and "profile" in info_as_url.path
                 ):
-                    updated_player = get_player_data(player.link, SET)
-                    complete_player_manager.remove_player(player)
+                    updated_player = get_player_data(url=player.link, set=SET)
                     if updated_player:
-                        complete_player_manager.add_player(updated_player)
-
-        complete_player_manager.sort()
+                        updated_complete_manager.add_player(updated_player)
+        updated_complete_manager.sort()
         sheets_obj.clear()
-        sheets_obj.update(complete_player_manager.get_players_as_list())
+        sheets_obj.update(updated_complete_manager.get_players_as_list())
     else:
         sheets_player_manager.sort()
         sheets_obj.clear()
